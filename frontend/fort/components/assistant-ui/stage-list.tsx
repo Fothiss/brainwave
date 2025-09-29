@@ -5,6 +5,7 @@ import {
   ThreadListPrimitive,
 } from "@assistant-ui/react";
 import { Button } from "@/components/ui/button";
+import { v4 as uuidv4 } from 'uuid';
 
 export const StageList: FC<{
     stageIndex: number;
@@ -32,7 +33,7 @@ export const StageList: FC<{
   useEffect(() => {
     localStorage.setItem("agentId", String(0))
     localStorage.setItem("type", "text")
-    localStorage.setItem("token", crypto.randomUUID())
+    localStorage.setItem("token", uuidv4())
   }, []);
 
   return (
