@@ -1,0 +1,14 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Cache
+.pytest_cache/
+
+#Tests
+test_decomposer_answer.py
+test_decomposer_code.py
