@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'chat.apps.ChatConfig',
     'mermaid.apps.MermaidConfig',
     'confluence.apps.ConfluenceConfig',
+    'operations.apps.OperationsConfig',
     'rest_framework',
     'drf_spectacular',
     'corsheaders',
