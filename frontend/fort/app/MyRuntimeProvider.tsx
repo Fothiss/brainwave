@@ -11,14 +11,20 @@ const MyModelAdapter: ChatModelAdapter = {
   async run({ messages, abortSignal }) {
     let token: string | undefined;
 
-    token = localStorage.getItem('token')
+    token = localStorage.getItem('token') ?? undefined
     if (!token) {
       throw new Error("Token is required for the Mermaid endpoint.");
     }
 
-    const lastMessage = messages.at(-1);
-    const rawText = lastMessage?.content?.[0]?.text ?? "";
-    if (!rawText) throw new Error("User message text is missing.");
+const lastMessage = messages.at(-1);
+
+// достаём первый текстовый блок из последнего сообщения
+const textPart = lastMessage?.content.find(
+  (part) => part.type === "text"
+) as { type: "text"; text: string } | undefined;
+
+const rawText = textPart?.text ?? "";
+if (!rawText) throw new Error("User message text is missing.");
 
     const texts = rawText
       .split(",")
@@ -63,8 +69,9 @@ const MyModelAdapter: ChatModelAdapter = {
     if (type === "mermaid") {
       const { images } = await response.json();
       const content = (images as string[]).map((b64) => ({
-        type: "image" as const,
-        src: `data:image/png;base64,${b64}`,
+        type: "file" as const,
+        mimeType: "image/png",
+        data: b64
       }));
       return { content, token };
     } else {
