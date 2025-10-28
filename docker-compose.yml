@@ -44,9 +44,21 @@ services:
     networks:
       - app-network
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - ${QDRANT_HTTP_PORT}
+      - ${QDRANT_GRPC_PORT}
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
 
 volumes:
   db_data:
+  qdrant_data:

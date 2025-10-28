@@ -1,6 +1,5 @@
-# Brainwave
+# Frontend
 
-Этот проект использует **PostgreSQL** и **Qdrant** для хранения данных и векторных эмбеддингов.  
 Ниже приведён пример конфигурации переменных окружения и краткие инструкции по запуску.
 
 ## ⚙️ Переменные окружения
@@ -8,13 +7,9 @@
 Создайте файл `.env` в корне проекта и добавьте следующие параметры:
 
 ```env
-# PostgreSQL
-DB_PORT=5433
-DB_NAME=chat
-DB_USER=postgres
-DB_PASSWORD=postgres
-
-# Qdrant
-QDRANT_HTTP_PORT=6333:6333
-QDRANT_GRPC_PORT=6334:6334
+NEXT_PUBLIC_BACKEND_URL=http://95.215.56.225:8000
+NEXT_PUBLIC_CONFLUENCE_URL=""
+NEXT_PUBLIC_CONFLUENCE_USER=""
+NEXT_PUBLIC_CONFLUENCE_API_TOKEN=""
+NEXT_PUBLIC_CONFLUENCE_SPACE=""
 ```

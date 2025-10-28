@@ -27,3 +27,5 @@ markdown==3.8
 torch
 sentence-transformers
 transformers
+dotenv
+qdrant_client

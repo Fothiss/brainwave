@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -5,6 +6,12 @@ class OperationRef(models.Model):
     operation_id = models.BigIntegerField(primary_key=True)
     name = models.TextField()
     participants = models.SmallIntegerField(choices=[(i, i) for i in range(4)])
+    rules = ArrayField(
+        models.TextField(),
+        blank=True,
+        default=list,
+        help_text="Список правил операции"
+    )
 
     class Meta:
         db_table = "operation_ref"
