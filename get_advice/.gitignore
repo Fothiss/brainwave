@@ -1,0 +1,11 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+test.py
+
+# Cache
+.pytest_cache/
