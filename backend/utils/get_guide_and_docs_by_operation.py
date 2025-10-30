@@ -1,10 +1,6 @@
 import psycopg2
+import os
 
-DB_HOST = env('DB_HOST')
-DB_PORT = env('DB_PORT')
-DB_NAME = env('DB_NAME')
-DB_USER = env('DB_USER')
-DB_PASSWORD = env('DB_PASSWORD')
 
 def get_guide_and_docs_by_operation(operation_id):
     """
@@ -13,21 +9,28 @@ def get_guide_and_docs_by_operation(operation_id):
      - второй: [name, doc_id] из таблицы foundation_docs
     для указанного operation_id.
     """
+
+    DB_HOST = os.getenv('DB_HOST')
+    DB_PORT = os.getenv('DB_PORT')
+    DB_NAME = os.getenv('DB_NAME')
+    DB_USER = os.getenv('DB_USER')
+    DB_PASSWORD = os.getenv('DB_PASSWORD')
+
     guide_result = []
     docs_result = []
 
     query_guide = """
     SELECT DISTINCT ug.name, ug.section_no
-    FROM public.guide_operation_doc as god
-    LEFT JOIN public.user_guide as ug ON ug.guide_id = god.guide_id
-    WHERE god.operation_id = %s;
+    FROM public.operation_order_basis as oob
+    LEFT JOIN public.user_guide as ug ON ug.guide_id = oob.order_id
+    WHERE oob.operation_id = %s;
     """
 
     query_docs = """
-    SELECT DISTINCT bd.name, bd.doc_id
-    FROM public.guide_operation_doc AS god
-    LEFT JOIN public.base_document AS bd ON bd.doc_id = god.doc_id
-    WHERE god.operation_id = %s;
+    SELECT DISTINCT bd.name, bd.basis_id
+    FROM public.operation_order_basis AS oob
+    LEFT JOIN public.basis_doc AS bd ON bd.basis_id = oob.basis_id
+    WHERE oob.operation_id = %s;
     """
 
     conn = None

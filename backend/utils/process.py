@@ -11,12 +11,18 @@ from docx import Document
 # ==========================
 load_dotenv()
 
-AUTH_KEY = os.getenv("AUTH_KEY")   # ключ авторизации из .env
-QDRANT_HOST = "95.215.56.225"
-QDRANT_PORT = 6333
-DOC_PATH = "Правила.docx"               # ⚠️ конвертируй .doc → .docx заранее
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+AUTH_KEY = os.getenv("AUTH_KEY")
+QDRANT_HOST = os.getenv("QDRANT_HOST")
+QDRANT_PORT = os.getenv("QDRANT_HTTP_PORT")
+DOC_PATH = os.path.join(BASE_DIR, "Правила.docx")  # ⚠️ конвертируй .doc → .docx заранее
 COLLECTION_NAME = "legal_rules_chunks"
 
+
+# ==========================
+# 🔹 1. Получение временного access token GIGACHAT
+# ==========================
 def get_access_token(auth_key: str) -> str:
     """Получает временный access_token через /api/v2/oauth"""
     url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
@@ -84,7 +90,6 @@ def get_embeddings(texts, access_token, batch_size=10):
         print(f"🧠 Получено {len(embeddings)} эмбеддингов (batch {i // batch_size + 1})")
 
     return all_embeddings
-
 
 
 # ==========================
