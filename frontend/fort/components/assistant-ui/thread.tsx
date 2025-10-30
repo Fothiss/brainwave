@@ -6,7 +6,7 @@ import {
     ThreadPrimitive,
     useThreadRuntime,
 } from "@assistant-ui/react";
-import type {FC} from "react";
+import type {FC, SyntheticEvent} from "react";
 import {useState} from "react";
 import {
     ArrowDownIcon,
@@ -220,9 +220,10 @@ const Composer = () => {
     const runtime = useThreadRuntime();
 
     const [selected, setSelected] = useState<OperationRef | null>(null)
+    const [participantsCount, setParticipantsCount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const onClick = async () => {
+    const send = async () => {
         if (isLoading)
             return
 
@@ -233,13 +234,18 @@ const Composer = () => {
         setIsLoading(false)
     }
 
+    const handleSelectChange = (_: SyntheticEvent, value: OperationRef | null) => {
+        setSelected(value);
+        setParticipantsCount(0);
+    };
+
     return (
         <div style={{width: "100%", display: "flex", gap: "10px"}}>
             <Autocomplete
                 options={options}
-                getOptionLabel={(option) => `${option.name}; Участники: ${option.participants}`}
+                getOptionLabel={(option) => `${option.name}`}
                 loading={loading}
-                onChange={(_, value) => setSelected(value)}
+                onChange={handleSelectChange}
                 filterSelectedOptions
                 fullWidth
                 sx={{flexGrow: 1}}
@@ -263,7 +269,32 @@ const Composer = () => {
                     />
                 )}
             />
-            <IconButton aria-label="sent" onClick={onClick} style={{width: "56px"}}>
+            <Autocomplete
+                options={Array.from({length: (selected?.participants || 0) + 1}, (_, i) => i)}
+                getOptionLabel={(option) => `${option}`}
+                value={participantsCount}
+                onChange={(_, value) => setParticipantsCount(value ?? 0)}
+                sx={{width: "180px"}}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        placeholder="Кол-во участников"
+                        variant="outlined"
+                        size="medium"
+                        slotProps={{
+                            input: {
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <>
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                )
+                            }
+                        }}
+                    />
+                )}
+            />
+            <IconButton aria-label="sent" onClick={send} style={{width: "56px"}}>
                 {
                     isLoading
                         ? <CircularProgress color="inherit" size={20}/>
