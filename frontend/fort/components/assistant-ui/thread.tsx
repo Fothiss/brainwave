@@ -28,7 +28,10 @@ import {Button} from "@/components/ui/button";
 import {MarkdownText} from "@/components/assistant-ui/markdown-text";
 import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
 import {useOperationRefs} from "@/app/hooks/useOperationRefs";
-import {Autocomplete, CircularProgress, TextField} from "@mui/material";
+import {Autocomplete, CircularProgress, TextField, IconButton} from "@mui/material";
+import {Send} from "@mui/icons-material"
+import {OperationRef} from "@/app/models/operationRef";
+import {handleSelect} from "@/app/utils/handleSelect";
 
 const DefaultImageComponent: FC<{ src: string; alt?: string }> = ({
                                                                       src,
@@ -214,35 +217,60 @@ const ThreadWelcomeSuggestions: FC = () => {
 
 const Composer = () => {
     const {options, loading} = useOperationRefs();
+    const runtime = useThreadRuntime();
+
+    const [selected, setSelected] = useState<OperationRef | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
+    const onClick = async () => {
+        if (isLoading)
+            return
+
+        setIsLoading(true)
+
+        await handleSelect(selected, runtime)
+
+        setIsLoading(false)
+    }
 
     return (
-        <Autocomplete
-            options={options}
-            getOptionLabel={(option) => `${option.name}; Участники: ${option.participants}`}
-            loading={loading}
-            filterSelectedOptions
-            fullWidth
-            sx={{flexGrow: 1}}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    placeholder="Выберите операцию"
-                    variant="outlined"
-                    size="medium"
-                    slotProps={{
-                        input: {
-                            ...params.InputProps,
-                            endAdornment: (
-                                <>
-                                    {loading ? <CircularProgress color="inherit" size={20}/> : null}
-                                    {params.InputProps.endAdornment}
-                                </>
-                            )
-                        }
-                    }}
-                />
-            )}
-        />
+        <div style={{width: "100%", display: "flex", gap: "10px"}}>
+            <Autocomplete
+                options={options}
+                getOptionLabel={(option) => `${option.name}; Участники: ${option.participants}`}
+                loading={loading}
+                onChange={(_, value) => setSelected(value)}
+                filterSelectedOptions
+                fullWidth
+                sx={{flexGrow: 1}}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        placeholder="Выберите операцию"
+                        variant="outlined"
+                        size="medium"
+                        slotProps={{
+                            input: {
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <>
+                                        {loading ? <CircularProgress color="inherit" size={20}/> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                )
+                            }
+                        }}
+                    />
+                )}
+            />
+            <IconButton aria-label="sent" onClick={onClick} style={{width: "56px"}}>
+                {
+                    isLoading
+                        ? <CircularProgress color="inherit" size={20}/>
+                        : <Send/>
+                }
+            </IconButton>
+        </div>
     );
 };
 
