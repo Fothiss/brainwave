@@ -30,24 +30,19 @@ class OperationDetailsView(APIView):
         if not operation_id:
             return Response({"error": "operation_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 1. Получаем данные из БД
         operation_obj = get_object_or_404(OperationRef, operation_id=operation_id)
 
-        # 2. Вызываем первую функцию
         guide_arr, docs_arr = get_guide_and_docs_by_operation(operation_id)
 
-        # 3. Определяем section_number
         rules = operation_obj.rules or []
         section_number = rules[0] if rules else ""
 
-        # 4. Получаем юр. рекомендации
         legal_result = get_legal_advice(
             operation=operation_obj.name,
             participant_type="Физическое лицо",
             section_number=section_number
         )
 
-        # 5. Формируем ответ
         return Response({
             "operation": OperationRefSerializer(operation_obj).data,
             "guide_data": guide_arr,

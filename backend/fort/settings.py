@@ -30,15 +30,7 @@ SECRET_KEY = 'django-insecure-h=2(9qbc-!bn86pz12m7^jg7@p!wl*4@y(ai@^qeg*kq1q0v_n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = ['*']
-CORS_ALLOW_ALL_ORIGINS = True #FIXME
-# CORS_ALLOWED_ORIGINS = [
-    # "https://fort.3utilities.com"
-# ]
-
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# SECURE_SSL_REDIRECT = False
-# SESSION_COOKIE_SECURE = False
-# CSRF_COOKIE_SECURE = False
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_METHODS = [
     # 'DELETE',
@@ -56,12 +48,11 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-
 # Application definition
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Brainwave API',
-    'DESCRIPTION': 'API для взаимодействия с ИИ агентом генерации ТЗ',
+    'DESCRIPTION': 'API для взаимодействия с приложением',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': True,
     'SWAGGER_UI_SETTINGS': {
@@ -81,9 +72,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'chat.apps.ChatConfig',
-    'mermaid.apps.MermaidConfig',
-    'confluence.apps.ConfluenceConfig',
     'operations.apps.OperationsConfig',
     'rest_framework',
     'drf_spectacular',
@@ -122,7 +110,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fort.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -136,14 +123,12 @@ DATABASES = {
         'PORT': env('DB_PORT'),
     }
 }
-#CONFLUENCE
+# CONFLUENCE
 
 CONFLUENCE_URL = env('CONFLUENCE_URL')
 CONFLUENCE_USERNAME = env('CONFLUENCE_USERNAME')
 CONFLUENCE_API_TOKEN = env('CONFLUENCE_API_TOKEN')
 CONFLUENCE_SPACE_KEY = env('CONFLUENCE_SPACE_KEY')
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -163,7 +148,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -174,7 +158,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
