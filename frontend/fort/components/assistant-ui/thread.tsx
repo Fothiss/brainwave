@@ -283,30 +283,6 @@ const Composer = () => {
                         />
                     )}
                 />
-                <Autocomplete
-                    options={[selected?.participants ?? 0]}
-                    getOptionLabel={(option) => `${option}`}
-                    value={selected?.participants ?? 0}
-                    sx={{width: "90px"}}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Участники"
-                            variant="outlined"
-                            size="medium"
-                            slotProps={{
-                                input: {
-                                    ...params.InputProps,
-                                    endAdornment: (
-                                        <>
-                                            {params.InputProps.endAdornment}
-                                        </>
-                                    )
-                                }
-                            }}
-                        />
-                    )}
-                />
                 <IconButton aria-label="sent" onClick={send} style={{width: "56px"}}>
                     {
                         isLoading
