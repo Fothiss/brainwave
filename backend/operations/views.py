@@ -27,8 +27,13 @@ class OperationRefListView(generics.ListAPIView):
 class OperationDetailsView(APIView):
     def post(self, request, *args, **kwargs):
         operation_id = request.data.get("operation_id")
+        participants = request.data.get("participants", [])
+
         if not operation_id:
             return Response({"error": "operation_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not isinstance(participants, list):
+            return Response({"error": "participants must be a list"}, status=status.HTTP_400_BAD_REQUEST)
 
         operation_obj = get_object_or_404(OperationRef, operation_id=operation_id)
 
@@ -37,15 +42,29 @@ class OperationDetailsView(APIView):
         rules = operation_obj.rules or []
         section_number = rules[0] if rules else ""
 
-        legal_result = get_legal_advice(
-            operation=operation_obj.name,
-            participant_type="Физическое лицо",
-            section_number=section_number
-        )
+        legal_advice_results = []
+
+        for p in participants:
+            participant_type = p.get("type")
+            is_resident = p.get("isResident")
+
+            if not participant_type or not is_resident:
+                continue
+
+            legal_text = get_legal_advice(
+                operation=operation_obj.name,
+                participant_type=participant_type,
+                section_number=section_number
+            )
+
+            legal_advice_results.append({
+                "participant": p,
+                "advice": legal_text
+            })
 
         return Response({
             "operation": OperationRefSerializer(operation_obj).data,
             "guide_data": guide_arr,
             "docs_data": docs_arr,
-            "legal_advice": legal_result
+            "legal_advice": legal_advice_results
         }, status=status.HTTP_200_OK)
