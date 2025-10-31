@@ -221,7 +221,6 @@ const Composer = () => {
     const runtime = useThreadRuntime();
 
     const [selected, setSelected] = useState<OperationRef | null>(null);
-    const [participantsCount, setParticipantsCount] = useState<number>(0);
     const [participants, setParticipants] = useState<Participants[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -238,18 +237,12 @@ const Composer = () => {
 
     const handleSelectChange = (_: SyntheticEvent, value: OperationRef | null) => {
         setSelected(value);
-        setParticipantsCount(0);
-        setParticipants([]);
-    };
-
-    const handleParticipantsCount = (_: SyntheticEvent, value: number | null) => {
-        setParticipantsCount(value ?? 0)
-        setParticipants(Array.from({length: value ?? 0}, () => ({
+        setParticipants(Array.from({length: value?.participants ?? 0}, () => ({
             name: "",
             type: "Физическое лицо",
             isResident: "Да"
         })));
-    }
+    };
 
     const updateParticipant = (index: number, key: "name" | "type" | "isResident", value: string) => {
         setParticipants(prev => {
@@ -291,15 +284,14 @@ const Composer = () => {
                     )}
                 />
                 <Autocomplete
-                    options={Array.from({length: (selected?.participants || 0) + 1}, (_, i) => i)}
+                    options={[selected?.participants ?? 0]}
                     getOptionLabel={(option) => `${option}`}
-                    value={participantsCount}
-                    onChange={handleParticipantsCount}
-                    sx={{width: "180px"}}
+                    value={selected?.participants ?? 0}
+                    sx={{width: "90px"}}
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            placeholder="Кол-во участников"
+                            label="Участники"
                             variant="outlined"
                             size="medium"
                             slotProps={{
