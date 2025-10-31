@@ -1,8 +1,13 @@
 import {ThreadRuntime} from "@assistant-ui/react";
 
 import {OperationRef} from "@/app/models/operationRef";
+import {Participants} from "@/app/models/participants";
 
-export const handleSelect = async (operation: OperationRef | null, runtime: ThreadRuntime) => {
+export const handleSelect = async (
+    operation: OperationRef | null,
+    participants: Participants[],
+    runtime: ThreadRuntime
+) => {
     if (!operation) return;
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -17,7 +22,7 @@ export const handleSelect = async (operation: OperationRef | null, runtime: Thre
         res = await fetch(`${backendUrl}/api/v1/operations/details/`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({operation_id: operation.operation_id})
+            body: JSON.stringify({operation_id: operation.operation_id, participants})
         });
     } catch {
         runtime.append({
@@ -71,8 +76,16 @@ export const handleSelect = async (operation: OperationRef | null, runtime: Thre
         content: [{type: "text", text: `### 📂 Документы\n${formattedDocs}`}]
     });
 
-    runtime.append({
-        role: "assistant",
-        content: [{type: "text", text: legal_advice as string}]
+    (legal_advice as Array<{ participant: Participants, advice: string }>).forEach(item => {
+        const {participant, advice} = item;
+
+        const title = `👤 ${participant.name} (${participant.type}, Резидент: ${participant.isResident})`;
+
+        runtime.append({
+            role: "assistant",
+            content: [
+                {type: "text", text: `### ${title}\n${advice}`}
+            ]
+        });
     });
 };

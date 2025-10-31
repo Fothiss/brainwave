@@ -32,6 +32,7 @@ import {Autocomplete, CircularProgress, TextField, IconButton} from "@mui/materi
 import {Send} from "@mui/icons-material"
 import {OperationRef} from "@/app/models/operationRef";
 import {handleSelect} from "@/app/utils/handleSelect";
+import {Participants} from "@/app/models/participants";
 
 const DefaultImageComponent: FC<{ src: string; alt?: string }> = ({
                                                                       src,
@@ -219,9 +220,10 @@ const Composer = () => {
     const {options, loading} = useOperationRefs();
     const runtime = useThreadRuntime();
 
-    const [selected, setSelected] = useState<OperationRef | null>(null)
+    const [selected, setSelected] = useState<OperationRef | null>(null);
     const [participantsCount, setParticipantsCount] = useState<number>(0);
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [participants, setParticipants] = useState<Participants[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const send = async () => {
         if (isLoading)
@@ -229,7 +231,7 @@ const Composer = () => {
 
         setIsLoading(true)
 
-        await handleSelect(selected, runtime)
+        await handleSelect(selected, participants, runtime)
 
         setIsLoading(false)
     }
@@ -237,70 +239,120 @@ const Composer = () => {
     const handleSelectChange = (_: SyntheticEvent, value: OperationRef | null) => {
         setSelected(value);
         setParticipantsCount(0);
+        setParticipants([]);
+    };
+
+    const handleParticipantsCount = (_: SyntheticEvent, value: number | null) => {
+        setParticipantsCount(value ?? 0)
+        setParticipants(Array.from({length: value ?? 0}, () => ({
+            name: "",
+            type: "Физическое лицо",
+            isResident: "Да"
+        })));
+    }
+
+    const updateParticipant = (index: number, key: "name" | "type" | "isResident", value: string) => {
+        setParticipants(prev => {
+            const updated = [...prev];
+            updated[index] = {...updated[index], [key]: value};
+            return updated;
+        });
     };
 
     return (
-        <div style={{width: "100%", display: "flex", gap: "10px"}}>
-            <Autocomplete
-                options={options}
-                getOptionLabel={(option) => `${option.name}`}
-                loading={loading}
-                onChange={handleSelectChange}
-                filterSelectedOptions
-                fullWidth
-                sx={{flexGrow: 1}}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        placeholder="Выберите операцию"
-                        variant="outlined"
-                        size="medium"
-                        slotProps={{
-                            input: {
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <>
-                                        {loading ? <CircularProgress color="inherit" size={20}/> : null}
-                                        {params.InputProps.endAdornment}
-                                    </>
-                                )
-                            }
-                        }}
-                    />
-                )}
-            />
-            <Autocomplete
-                options={Array.from({length: (selected?.participants || 0) + 1}, (_, i) => i)}
-                getOptionLabel={(option) => `${option}`}
-                value={participantsCount}
-                onChange={(_, value) => setParticipantsCount(value ?? 0)}
-                sx={{width: "180px"}}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        placeholder="Кол-во участников"
-                        variant="outlined"
-                        size="medium"
-                        slotProps={{
-                            input: {
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <>
-                                        {params.InputProps.endAdornment}
-                                    </>
-                                )
-                            }
-                        }}
-                    />
-                )}
-            />
-            <IconButton aria-label="sent" onClick={send} style={{width: "56px"}}>
+        <div style={{width: "100%", display: "grid", gap: "10px"}}>
+            <div style={{width: "100%", display: "flex", gap: "10px"}}>
+                <Autocomplete
+                    options={options}
+                    getOptionLabel={(option) => `${option.name}`}
+                    loading={loading}
+                    onChange={handleSelectChange}
+                    filterSelectedOptions
+                    fullWidth
+                    sx={{flexGrow: 1}}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            placeholder="Выберите операцию"
+                            variant="outlined"
+                            size="medium"
+                            slotProps={{
+                                input: {
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                        <>
+                                            {loading ? <CircularProgress color="inherit" size={20}/> : null}
+                                            {params.InputProps.endAdornment}
+                                        </>
+                                    )
+                                }
+                            }}
+                        />
+                    )}
+                />
+                <Autocomplete
+                    options={Array.from({length: (selected?.participants || 0) + 1}, (_, i) => i)}
+                    getOptionLabel={(option) => `${option}`}
+                    value={participantsCount}
+                    onChange={handleParticipantsCount}
+                    sx={{width: "180px"}}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            placeholder="Кол-во участников"
+                            variant="outlined"
+                            size="medium"
+                            slotProps={{
+                                input: {
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                        <>
+                                            {params.InputProps.endAdornment}
+                                        </>
+                                    )
+                                }
+                            }}
+                        />
+                    )}
+                />
+                <IconButton aria-label="sent" onClick={send} style={{width: "56px"}}>
+                    {
+                        isLoading
+                            ? <CircularProgress color="inherit" size={20}/>
+                            : <Send/>
+                    }
+                </IconButton>
+            </div>
+            <div style={{width: "100%", marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px"}}>
                 {
-                    isLoading
-                        ? <CircularProgress color="inherit" size={20}/>
-                        : <Send/>
+                    participants.map((p, idx) => (
+                        <div key={idx} style={{display: "flex", gap: "10px", width: "100%", alignItems: "center"}}>
+
+                            <p style={{width: "150px"}}>Участник {idx + 1}</p>
+
+                            <Autocomplete
+                                options={["Физическое лицо", "Юридическое лицо"]}
+                                value={p.type}
+                                onChange={(_, value) => updateParticipant(idx, "type", value || "Физическое лицо")}
+                                sx={{width: "100%"}}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Тип лица" variant="outlined"/>
+                                )}
+                            />
+
+                            <Autocomplete
+                                options={["Да", "Нет"]}
+                                value={p.isResident}
+                                onChange={(_, value) => updateParticipant(idx, "isResident", value || "Да")}
+                                sx={{width: "290px"}}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Налоговый резидент РФ" variant="outlined"/>
+                                )}
+                            />
+                        </div>
+                    ))
                 }
-            </IconButton>
+            </div>
         </div>
     );
 };
