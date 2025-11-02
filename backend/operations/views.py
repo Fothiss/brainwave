@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from utils.get_guide_and_docs_by_operation import get_guide_and_docs_by_operation
 from utils.get_advice import get_legal_advice
-from operations.models import OperationRef
+from operations.models import OperationRef, OperationLog
 from operations.serializers import OperationRefSerializer
 
 
@@ -38,7 +38,6 @@ class OperationDetailsView(APIView):
         operation_obj = get_object_or_404(OperationRef, operation_id=operation_id)
 
         guide_arr, docs_arr = get_guide_and_docs_by_operation(operation_id)
-
         rules = operation_obj.rules or []
         section_number = rules[0] if rules else ""
 
@@ -62,7 +61,19 @@ class OperationDetailsView(APIView):
                 "advice": legal_text
             })
 
+        log = OperationLog.objects.create(
+            operation_id=operation_id,
+            participants=participants,
+            response={
+                "operation": OperationRefSerializer(operation_obj).data,
+                "guide_data": guide_arr,
+                "docs_data": docs_arr,
+                "legal_advice": legal_advice_results
+            }
+        )
+
         return Response({
+            "log_id": log.id,
             "operation": OperationRefSerializer(operation_obj).data,
             "guide_data": guide_arr,
             "docs_data": docs_arr,
