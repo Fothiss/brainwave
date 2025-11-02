@@ -1,6 +1,10 @@
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 
+
+# ==========================
+# 🔹 Operation models
+# ==========================
 
 class OperationRef(models.Model):
     operation_id = models.BigIntegerField(primary_key=True)
@@ -112,3 +116,25 @@ class OperationOrderBasis(models.Model):
 
     def __str__(self):
         return f"{self.operation_id} / {self.order_id} / {self.basis_id}"
+
+
+# ==========================
+# 🔹 Logging models
+# ==========================
+
+class OperationLog(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    operation_id = models.BigIntegerField()
+    participants = JSONField()
+    response = JSONField()
+
+    feedback = models.IntegerField(null=True, blank=True)
+    user_comment = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = "operation_log"
+
+    def __str__(self):
+        return f"Log #{self.id} — operation {self.operation_id}"
