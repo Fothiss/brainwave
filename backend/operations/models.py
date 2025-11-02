@@ -1,4 +1,4 @@
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -127,8 +127,8 @@ class OperationLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     operation_id = models.BigIntegerField()
-    participants = JSONField()
-    response = JSONField()
+    participants = models.JSONField()
+    response = models.JSONField()
 
     feedback = models.IntegerField(null=True, blank=True)
     user_comment = models.TextField(null=True, blank=True)
