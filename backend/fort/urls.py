@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
-from operations.views import OperationRefListView, OperationDetailsView
+from operations.views import OperationRefListView, OperationDetailsView, OperationFeedbackView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,4 +12,5 @@ urlpatterns = [
 
     path('api/v1/operations/', OperationRefListView.as_view(), name='operations-list'),
     path('api/v1/operations/details/', OperationDetailsView.as_view(), name="operations-details"),
+    path('api/v1/operations/feedback/', OperationFeedbackView.as_view())
 ]

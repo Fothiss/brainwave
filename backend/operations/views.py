@@ -79,3 +79,24 @@ class OperationDetailsView(APIView):
             "docs_data": docs_arr,
             "legal_advice": legal_advice_results
         }, status=status.HTTP_200_OK)
+
+
+class OperationFeedbackView(APIView):
+    def post(self, request, *args, **kwargs):
+        log_id = request.data.get("log_id")
+        feedback: int = request.data.get("feedback")
+        user_comment: str = request.data.get("user_comment", "")
+
+        if log_id is None or feedback is None:
+            return Response({"error": "log_id and feedback are required"}, status=400)
+
+        try:
+            log = OperationLog.objects.get(id=log_id)
+        except OperationLog.DoesNotExist:
+            return Response({"error": "log not found"}, status=404)
+
+        log.feedback = feedback
+        log.user_comment = user_comment
+        log.save()
+
+        return Response({"status": "feedback saved"}, status=200)
