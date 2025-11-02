@@ -2,6 +2,7 @@ import {ThreadRuntime} from "@assistant-ui/react";
 
 import {OperationRef} from "@/app/models/operationRef";
 import {Participants} from "@/app/models/participants";
+import {OperationDetails} from "@/app/models/operationDetails";
 
 export const handleSelect = async (
     operation: OperationRef | null,
@@ -54,38 +55,32 @@ export const handleSelect = async (
         return;
     }
 
-    const data = await res.json();
+    const data: OperationDetails = await res.json();
 
     const {guide_data, docs_data, legal_advice} = data;
 
-    const formattedGuide = (guide_data as Array<Array<string>>)
+    const formattedGuide = guide_data
         .map(([name, section]) => `- **${name}** — раздел ${section}`)
         .join("\n");
 
-    runtime.append({
-        role: "assistant",
-        content: [{type: "text", text: `### 📘 Руководство пользователя\n${formattedGuide}`}]
-    });
-
-    const formattedDocs = (docs_data as Array<Array<string>>)
+    const formattedDocs = docs_data
         .map(([name]) => `- ${name}`)
         .join("\n");
 
+    const content = legal_advice
+        .map(item => {
+            const {participant, advice} = item;
+
+            const title = `👤 ${participant.name} (${participant.type}, Резидент: ${participant.isResident})`;
+
+            return `\n\n### ${title}\n${advice}`
+        });
+
     runtime.append({
         role: "assistant",
-        content: [{type: "text", text: `### 📂 Документы\n${formattedDocs}`}]
-    });
-
-    (legal_advice as Array<{ participant: Participants, advice: string }>).forEach(item => {
-        const {participant, advice} = item;
-
-        const title = `👤 ${participant.name} (${participant.type}, Резидент: ${participant.isResident})`;
-
-        runtime.append({
-            role: "assistant",
-            content: [
-                {type: "text", text: `### ${title}\n${advice}`}
-            ]
-        });
+        content: [{
+            type: "text",
+            text: `### 📘 Руководство пользователя\n${formattedGuide}\n\n### 📂 Документы\n${formattedDocs}${content}`
+        }]
     });
 };
