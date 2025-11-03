@@ -3,10 +3,10 @@ import {
     BranchPickerPrimitive,
     ComposerPrimitive,
     MessagePrimitive,
-    ThreadPrimitive,
+    ThreadPrimitive, useLocalRuntime, useMessage,
     useThreadRuntime,
 } from "@assistant-ui/react";
-import type {FC, SyntheticEvent} from "react";
+import {FC, SyntheticEvent, useEffect} from "react";
 import {useState} from "react";
 import {
     ArrowDownIcon,
@@ -31,8 +31,8 @@ import {useOperationRefs} from "@/app/hooks/useOperationRefs";
 import {Autocomplete, CircularProgress, TextField, IconButton} from "@mui/material";
 import {Send} from "@mui/icons-material"
 import {OperationRef} from "@/app/models/operationRef";
-import {handleSelect} from "@/app/utils/handleSelect";
 import {Participants} from "@/app/models/participants";
+import {FeedbackBlock} from "@/components/ui/FeedbackBlock";
 
 const DefaultImageComponent: FC<{ src: string; alt?: string }> = ({
                                                                       src,
@@ -224,15 +224,30 @@ const Composer = () => {
     const [participants, setParticipants] = useState<Participants[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    useEffect(() => {
+        const unsubscribe = runtime.subscribe(() => {
+            setIsLoading(runtime.getState().isRunning)
+        })
+
+        return () => unsubscribe()
+    }, []);
+
     const send = async () => {
         if (isLoading)
             return
 
-        setIsLoading(true)
-
-        await handleSelect(selected, participants, runtime)
-
-        setIsLoading(false)
+        runtime.append({
+            role: "user",
+            content: [
+                {
+                    type: "text",
+                    text: `Операция: ${selected?.name}`
+                }
+            ],
+            metadata: {
+                custom: {operation: selected, participants}
+            }
+        });
     }
 
     const handleSelectChange = (_: SyntheticEvent, value: OperationRef | null) => {
@@ -378,20 +393,24 @@ const EditComposer: FC = () => {
 };
 
 const AssistantMessage: FC = () => {
+    const runtime = useMessage()
+    const custom: { log_id: number } | undefined = runtime.metadata.custom[0]
+
     return (
         <MessagePrimitive.Root
             className="grid grid-cols-[auto_auto_1fr] grid-rows-[auto_1fr] relative w-full max-w-[var(--thread-max-width)] py-4">
             <div
                 className="text-foreground max-w-[calc(var(--thread-max-width)*0.8)] break-words leading-7 col-span-2 col-start-2 row-start-1 my-1.5 flex-wrap">
-                <MessagePrimitive.Content
-                    components={{
-                        Text: MarkdownText,
-                        // Image: DefaultImageComponent,
-                    }}
-                />
+                <MessagePrimitive.Content components={{Text: MarkdownText}}/>
+
+                {
+                    custom && (
+                        <FeedbackBlock logId={custom.log_id}/>
+                    )
+                }
             </div>
 
-            <AssistantActionBar/>
+            {/*<AssistantActionBar/>*/}
 
             <BranchPicker className="col-start-2 row-start-2 -ml-2 mr-2"/>
         </MessagePrimitive.Root>
@@ -482,4 +501,3 @@ const CircleStopIcon = () => {
         </svg>
     );
 };
-
