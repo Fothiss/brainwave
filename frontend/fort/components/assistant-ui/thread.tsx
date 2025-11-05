@@ -194,7 +194,7 @@ const ThreadWelcomeSuggestions: FC = () => {
 
 
 const Composer = () => {
-    const {options, loading} = useOperationRefs();
+    const {operations, loading} = useOperationRefs();
     const runtime = useThreadRuntime();
 
     const [selected, setSelected] = useState<OperationRef | null>(null);
@@ -248,7 +248,7 @@ const Composer = () => {
         <div style={{width: "100%", display: "grid", gap: "10px"}}>
             <div style={{width: "100%", display: "flex", gap: "10px"}}>
                 <Autocomplete
-                    options={options}
+                    options={operations}
                     getOptionLabel={(option) => `${option.name}`}
                     loading={loading}
                     onChange={handleSelectChange}

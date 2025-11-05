@@ -1,8 +1,15 @@
 import {useEffect, useState} from "react";
-import {OperationRef} from "@/app/models/operationRef";
 
-export const useOperationRefs = () => {
-    const [options, setOptions] = useState<OperationRef[]>([]);
+import {OperationRef} from "@/app/models/operationRef";
+import {BACKEND_URL} from "@/app/api/chat/route";
+
+type UseOperationRefsReturnsType = {
+    operations: OperationRef[];
+    loading: boolean;
+}
+
+export const useOperationRefs = (): UseOperationRefsReturnsType => {
+    const [operations, setOperations] = useState<OperationRef[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -10,12 +17,12 @@ export const useOperationRefs = () => {
 
         const fetchAll = async () => {
             setLoading(true);
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
             let page = 1;
             let all: OperationRef[] = [];
 
             while (true) {
-                const res = await fetch(`${backendUrl}/api/v1/operations/?page=${page}&page_size=100`);
+                const res = await fetch(`${BACKEND_URL}/api/v1/operations/?page=${page}&page_size=100`);
                 if (!res.ok) break;
 
                 const data = await res.json();
@@ -25,16 +32,17 @@ export const useOperationRefs = () => {
                 page += 1;
             }
 
-            if (!cancelled) setOptions(all);
+            if (!cancelled) setOperations(all);
+
             setLoading(false);
         };
 
-        fetchAll();
+        fetchAll().then();
 
         return () => {
             cancelled = true;
         };
     }, []);
 
-    return {options, loading};
+    return {operations, loading};
 };
