@@ -20,6 +20,7 @@ import {OperationRef} from "@/app/models/operationRef";
 import {Participants} from "@/app/models/participants";
 import {FeedbackBlock} from "@/components/ui/FeedbackBlock";
 import {downloadPdf} from "@/app/utils/downloadPdf";
+import AssistantActionBar from "@/components/assistant-ui/AssistantActionBar";
 
 const DefaultImageComponent: FC<{ src: string; alt?: string }> = ({src, alt = "",}) => <img src={src} alt={alt}
                                                                                             className="max-w-[240px] h-auto m-1 rounded-md shadow"/>;
@@ -362,36 +363,6 @@ const AssistantMessage: FC = () => {
     );
 };
 
-type AssistantActionBarProps = {
-    onSave: () => void
-}
-
-const AssistantActionBar: FC<AssistantActionBarProps> = (props) => {
-    return (
-        <ActionBarPrimitive.Root
-            hideWhenRunning
-            autohide="not-last"
-            autohideFloat="single-branch"
-            className="text-muted-foreground flex gap-1 col-start-3 row-start-2 -ml-1 data-[floating]:bg-background data-[floating]:absolute data-[floating]:rounded-md data-[floating]:border data-[floating]:p-1 data-[floating]:shadow-sm"
-        >
-            <ActionBarPrimitive.Copy asChild>
-                <TooltipIconButton tooltip="Копировать">
-                    <MessagePrimitive.If copied>
-                        <CheckIcon/>
-                    </MessagePrimitive.If>
-                    <MessagePrimitive.If copied={false}>
-                        <CopyIcon/>
-                    </MessagePrimitive.If>
-                </TooltipIconButton>
-            </ActionBarPrimitive.Copy>
-
-            <TooltipIconButton tooltip="Сохранить" onClick={props.onSave}>
-                <SaveIcon/>
-            </TooltipIconButton>
-        </ActionBarPrimitive.Root>
-    );
-};
-
 const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({className, ...rest}) => {
     return (
         <BranchPickerPrimitive.Root
@@ -416,19 +387,5 @@ const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({className, ...rest}
                 </TooltipIconButton>
             </BranchPickerPrimitive.Next>
         </BranchPickerPrimitive.Root>
-    );
-};
-
-const CircleStopIcon = () => {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            width="16"
-            height="16"
-        >
-            <rect width="10" height="10" x="3" y="3" rx="2"/>
-        </svg>
     );
 };
