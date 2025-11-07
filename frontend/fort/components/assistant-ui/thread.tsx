@@ -1,29 +1,19 @@
-import {
-    ActionBarPrimitive, BranchPickerPrimitive, MessagePrimitive, ThreadPrimitive,
-    useMessage, useThreadRuntime
-} from "@assistant-ui/react";
+import {BranchPickerPrimitive, MessagePrimitive, ThreadPrimitive, useThreadRuntime} from "@assistant-ui/react";
 import {FC, SyntheticEvent, useEffect, useState} from "react";
-import {
-    ArrowDownIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, CopyIcon, SaveIcon, GlobeIcon
-} from "lucide-react";
+import {ArrowDownIcon, ChevronLeftIcon, ChevronRightIcon, GlobeIcon} from "lucide-react";
 import {toast} from "sonner";
 import {cn} from "@/lib/utils";
 import {ThreadBackgroundMessage} from "@/lib/messages";
-
 import {Button} from "@/components/ui/button";
-import {MarkdownText} from "@/components/assistant-ui/markdown-text";
 import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
 import {useOperationRefs} from "@/app/hooks/useOperationRefs";
 import {Autocomplete, CircularProgress, TextField, IconButton} from "@mui/material";
 import {Send} from "@mui/icons-material"
 import {OperationRef} from "@/app/models/operationRef";
 import {Participants} from "@/app/models/participants";
-import {FeedbackBlock} from "@/components/ui/FeedbackBlock";
-import {downloadPdf} from "@/app/utils/downloadPdf";
-import AssistantActionBar from "@/components/assistant-ui/AssistantActionBar";
+import AssistantMessage from "@/components/assistant-ui/AssistantMessage";
+import {CreateAppendMessage} from "@assistant-ui/react";
 
-const DefaultImageComponent: FC<{ src: string; alt?: string }> = ({src, alt = "",}) => <img src={src} alt={alt}
-                                                                                            className="max-w-[240px] h-auto m-1 rounded-md shadow"/>;
 
 const GenerateConfluence: FC = () => {
     const [loading, setLoading] = useState(false);
@@ -94,12 +84,6 @@ const GenerateConfluence: FC = () => {
     );
 };
 
-interface ComposerActionProps {
-    isImageMode: boolean;
-    handleToggle: () => void;
-}
-
-
 export const Thread: FC<{ stageIndex: number }> = ({stageIndex}) => {
     return (
         <ThreadPrimitive.Root
@@ -166,33 +150,17 @@ const ThreadWelcome: FC<{ stageIndex: number }> = ({stageIndex}) => {
     );
 };
 
-const ThreadWelcomeSuggestions: FC = () => {
-    return (
-        <div className="mt-3 flex w-full items-stretch justify-center gap-4">
-            <ThreadPrimitive.Suggestion
-                className="hover:bg-muted/80 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors ease-in"
-                prompt="Пользователь загружает изображение. Сервер обрабатывает изображение. Результат сохраняется в базу данных."
-                method="replace"
-                autoSend
-            >
-        <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
-          Пример генерации изображения
-        </span>
-            </ThreadPrimitive.Suggestion>
-            <ThreadPrimitive.Suggestion
-                className="hover:bg-muted/80 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors ease-in"
-                prompt="What is assistant-ui?"
-                method="replace"
-                autoSend
-            >
-        <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
-          What is assistant-ui?
-        </span>
-            </ThreadPrimitive.Suggestion>
-        </div>
-    );
+
+type CustomMetadata = {
+    custom: {
+        operation: OperationRef | null;
+        participants: Participants[];
+    };
 };
 
+type CustomAppendMessage = CreateAppendMessage & {
+    metadata?: CustomMetadata;
+};
 
 const Composer = () => {
     const {operations, loading} = useOperationRefs();
@@ -210,11 +178,11 @@ const Composer = () => {
         return () => unsubscribe()
     }, []);
 
-    const send = async () => {
+    const sendMessage = () => {
         if (isLoading)
             return
 
-        runtime.append({
+        const message: CustomAppendMessage = {
             role: "user",
             content: [
                 {
@@ -223,9 +191,14 @@ const Composer = () => {
                 }
             ],
             metadata: {
-                custom: {operation: selected, participants}
+                custom: {
+                    operation: selected,
+                    participants
+                }
             }
-        });
+        };
+
+        runtime.append(message);
     }
 
     const handleSelectChange = (_: SyntheticEvent, value: OperationRef | null) => {
@@ -276,7 +249,7 @@ const Composer = () => {
                         />
                     )}
                 />
-                <IconButton aria-label="sent" onClick={send} style={{width: "56px"}}>
+                <IconButton aria-label="sent" onClick={sendMessage} style={{width: "56px"}}>
                     {
                         isLoading
                             ? <CircularProgress color="inherit" size={20}/>
@@ -334,34 +307,6 @@ const UserMessage: FC = () => {
     );
 };
 
-const AssistantMessage: FC = () => {
-    const runtime = useMessage()
-    const custom: { log_id: number } | undefined = runtime.metadata.custom[0]
-    const text = runtime.content[0]?.type === "text" ? runtime.content[0].text : undefined
-
-    return (
-        <MessagePrimitive.Root
-            className="grid grid-cols-[auto_auto_1fr] grid-rows-[auto_1fr] relative w-full max-w-[var(--thread-max-width)] py-4">
-            <div
-                className="text-foreground max-w-[calc(var(--thread-max-width)*0.8)] break-words leading-7 col-span-2 col-start-2 row-start-1 my-1.5 flex-wrap">
-
-                <div id={runtime.id}>
-                    <MessagePrimitive.Content components={{Text: MarkdownText}}/>
-                </div>
-
-                {
-                    custom && (
-                        <FeedbackBlock logId={custom.log_id}/>
-                    )
-                }
-            </div>
-
-            <AssistantActionBar onSave={() => downloadPdf(runtime.id)}/>
-
-            <BranchPicker className="col-start-2 row-start-2 -ml-2 mr-2"/>
-        </MessagePrimitive.Root>
-    );
-};
 
 const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({className, ...rest}) => {
     return (

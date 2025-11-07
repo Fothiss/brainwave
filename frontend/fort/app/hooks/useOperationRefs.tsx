@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 
 import {OperationRef} from "@/app/models/operationRef";
-import {BACKEND_URL} from "@/app/api/chat/route";
+import {BACKEND_URL} from "@/app/api";
 
 type UseOperationRefsReturnsType = {
     operations: OperationRef[];

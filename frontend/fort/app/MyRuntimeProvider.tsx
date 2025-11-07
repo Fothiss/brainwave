@@ -6,25 +6,28 @@ import {AssistantRuntimeProvider, useLocalRuntime, type ChatModelAdapter,} from 
 import {OperationRef} from "@/app/models/operationRef";
 import {Participants} from "@/app/models/participants";
 import {OperationDetails} from "@/app/models/operationDetails";
+import {BACKEND_URL} from "@/app/api";
 
 const MyModelAdapter: ChatModelAdapter = {
     async run({messages, abortSignal}) {
 
-        const operation: OperationRef | null = messages.at(-1).metadata.custom.operation
-        const participants: Participants[] = messages.at(-1).metadata.custom.participants
+        const operation = messages.at(-1)?.metadata.custom.operation as OperationRef | null;
+        const participants = messages.at(-1)?.metadata.custom.participants as Participants[];
 
         if (!operation)
-            return {content: [{type: "text", text: `❌ Операция не выбрана`}]}
-
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+            return {content: [{type: "text", text: `❌ Операция не выбрана`}]};
 
         let res;
         try {
-            res = await fetch(`${backendUrl}/api/v1/operations/details/`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({operation_id: operation.operation_id, participants})
-            });
+            res = await fetch(
+                `${BACKEND_URL}/api/v1/operations/details/`,
+                {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({operation_id: operation.operation_id, participants}),
+                    signal: abortSignal
+                }
+            );
         } catch {
             return {content: [{type: "text", text: `❌ Не удалось связаться с сервером`}]};
         }
@@ -37,10 +40,10 @@ const MyModelAdapter: ChatModelAdapter = {
                     errorText = errorJson.error;
                 }
             } catch {
-                return {content: [{type: "text", text: "Непредвиденная ошибка"}]}
+                return {content: [{type: "text", text: "❌ Непредвиденная ошибка"}]};
             }
 
-            return {content: [{type: "text", text: `⚠️ ${errorText}`}]}
+            return {content: [{type: "text", text: `⚠️ ${errorText}`}]};
         }
 
         const data: OperationDetails = await res.json();
@@ -72,18 +75,22 @@ const MyModelAdapter: ChatModelAdapter = {
                 }
             ],
             metadata: {
-                custom: [{log_id}]
+                custom: {log_id}
             }
-        }
+        };
     }
 };
 
-export function MyRuntimeProvider({children,}: Readonly<{ children: ReactNode; }>) {
+type Props = {
+    children: ReactNode
+}
+
+export function MyRuntimeProvider(props: Props) {
     const runtime = useLocalRuntime(MyModelAdapter);
 
     return (
         <AssistantRuntimeProvider runtime={runtime}>
-            {children}
+            {props.children}
         </AssistantRuntimeProvider>
     );
 }
