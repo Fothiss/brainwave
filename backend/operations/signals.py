@@ -14,7 +14,8 @@ def process_law_task(law_id: int, file_url: str):
         files: list[str] = download_pdf_for_folder(file_url)
         for file in files:
             result = process_document_and_get_embedding(file)
-            upload_to_qdrant_one_doc(result["text"], result["embedding"])
+            collection_name = f"law_{law_id}"
+            upload_to_qdrant_one_doc(result["text"], result["embedding"], collection_name)
         print(f"✅ Обработка документа {law_id} завершена")
     except Exception as e:
         print(f"❌ Ошибка при обработке {law_id}: {e}")

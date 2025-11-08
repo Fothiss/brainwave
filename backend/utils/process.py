@@ -18,7 +18,6 @@ QDRANT_HOST = os.getenv("QDRANT_HOST")
 QDRANT_PORT = os.getenv("QDRANT_HTTP_PORT")
 DOC_PATH = os.path.join(BASE_DIR, "Правила.docx")  # ⚠️ конвертируй .doc → .docx заранее
 COLLECTION_NAME = "legal_rules_chunks"
-COLLECTION_NAME_DOC = "doc"
 
 
 # ==========================
@@ -146,19 +145,19 @@ if __name__ == "__main__":
 # ==========================
 # 🔹 5. Загрузка данных в Qdrant из 1 документа (для фукнции process_document_and_get_embedding)
 # ==========================
-def upload_to_qdrant_one_doc(text: str, embedding: list[float]):
-    """Создаёт (если нужно) коллекцию и добавляет одну точку"""
+def upload_to_qdrant_one_doc(text: str, embedding: list[float], collection_name: str):
+    """Создаёт коллекцию по документу (если нужно) и добавляет одну точку"""
     client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
     # создаём коллекцию, если нет
     existing = [c.name for c in client.get_collections().collections]
-    if COLLECTION_NAME_DOC not in existing:
+    if collection_name not in existing:
         dim = len(embedding)
         client.create_collection(
-            collection_name=COLLECTION_NAME_DOC,
+            collection_name=collection_name,
             vectors_config=models.VectorParams(size=dim, distance=models.Distance.COSINE)
         )
-        print(f"📦 Коллекция '{COLLECTION_NAME_DOC}' создана ({dim} dim).")
+        print(f"📦 Коллекция '{collection_name}' создана ({dim} dim).")
 
     # создаём один PointStruct
     point = models.PointStruct(
@@ -167,5 +166,5 @@ def upload_to_qdrant_one_doc(text: str, embedding: list[float]):
         payload={"text": text}
     )
 
-    client.upsert(collection_name=COLLECTION_NAME_DOC, points=[point])
-    print("✅ Документ загружен в Qdrant.")
+    client.upsert(collection_name=collection_name, points=[point])
+    print(f"✅ Документ загружен в Qdrant в коллекцию '{collection_name}'")
