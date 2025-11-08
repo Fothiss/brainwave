@@ -29,3 +29,7 @@ CONFLUENCE_USERNAME=""
 CONFLUENCE_API_TOKEN=""
 CONFLUENCE_SPACE_KEY=""
 ```
+
+## Особенности
+
+В utils необходимо поместить файл `service_account.json` для google drive, взятый из google drive console

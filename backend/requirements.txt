@@ -10,3 +10,6 @@ psycopg2-binary
 qdrant-client==1.15.1
 langchain-core==0.3.79
 langchain-gigachat==0.3.12
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
