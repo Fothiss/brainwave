@@ -13,7 +13,7 @@ def extract_text_from_file(file_path: str) -> str:
     """
     if not isinstance(file_path, (Path, str)):
         raise ValueError("file_path должен быть либо объектом Path, либо строкой")
-        
+
     # Обработка PDF-файлов
     if file_path.endswith('.pdf'):
         with open(file_path, 'rb') as f:
@@ -22,12 +22,12 @@ def extract_text_from_file(file_path: str) -> str:
             for page in reader.pages:
                 text += page.extract_text()
         return text.strip() or None
-    
+
     # Обработка TXT-файлов
     elif file_path.endswith('.txt'):
         with open(file_path, encoding='utf-8', errors="ignore") as f:
             return f.read().strip()
-            
+
     else:
         raise NotImplementedError("Поддерживаются только форматы .pdf и .txt")
 
@@ -57,7 +57,7 @@ def process_document_and_get_embedding(file_path: Union[str, Path]) -> dict:
         if not extracted_text:
             print("Ошибка: невозможно извлечь текст из файла")
             return {}
-        
+
         embedding = create_embedding(extracted_text)
         return {
             "text": extracted_text,
@@ -66,6 +66,5 @@ def process_document_and_get_embedding(file_path: Union[str, Path]) -> dict:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
         return {}
-    
 
-result = process_document_and_get_embedding('file_path.pdf')
+# result = process_document_and_get_embedding('file_path.pdf')
