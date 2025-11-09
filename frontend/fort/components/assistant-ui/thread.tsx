@@ -3,7 +3,6 @@ import {FC, SyntheticEvent, useEffect, useState} from "react";
 import {ArrowDownIcon, ChevronLeftIcon, ChevronRightIcon, GlobeIcon} from "lucide-react";
 import {toast} from "sonner";
 import {cn} from "@/lib/utils";
-import {ThreadBackgroundMessage} from "@/lib/messages";
 import {Button} from "@/components/ui/button";
 import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
 import {useOperationRefs} from "@/app/hooks/useOperationRefs";
@@ -13,6 +12,7 @@ import {OperationRef} from "@/app/models/operationRef";
 import {Participants} from "@/app/models/participants";
 import AssistantMessage from "@/components/assistant-ui/AssistantMessage";
 import {CreateAppendMessage} from "@assistant-ui/react";
+import ThreadWelcome from "@/components/assistant-ui/ThreadWelcome";
 
 
 const GenerateConfluence: FC = () => {
@@ -94,7 +94,7 @@ export const Thread: FC<{ stageIndex: number }> = ({stageIndex}) => {
         >
             <ThreadPrimitive.Viewport
                 className="flex h-full flex-col items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-8">
-                <ThreadWelcome stageIndex={stageIndex}/>
+                <ThreadWelcome/>
 
                 <ThreadPrimitive.Messages
                     components={{
@@ -132,21 +132,6 @@ const ThreadScrollToBottom: FC = () => {
                 <ArrowDownIcon/>
             </TooltipIconButton>
         </ThreadPrimitive.ScrollToBottom>
-    );
-};
-
-const ThreadWelcome: FC<{ stageIndex: number }> = ({stageIndex}) => {
-    return (
-        <ThreadPrimitive.Empty>
-            <div className="flex w-full max-w-[var(--thread-max-width)] flex-grow flex-col">
-                <div className="flex w-full flex-grow flex-col items-center justify-center">
-                    {stageIndex === 4 ?
-                        <p className="mt-4 font-medium whitespace-pre-line">{ThreadBackgroundMessage}</p>
-                        : stageIndex != 5 && (<p className="mt-4 font-medium">Brainwave </p>)}
-                </div>
-                { /*<ThreadWelcomeSuggestions />*/}
-            </div>
-        </ThreadPrimitive.Empty>
     );
 };
 
