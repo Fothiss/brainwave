@@ -29,12 +29,23 @@ def send_telegram_message(text):
 
 def notify_new_operation(operation_log):
     """Отправляет уведомление о новом запросе"""
+
+    legal_advice = operation_log.response.get('legal_advice', []) if operation_log.response else []
+    
+    advice_text = "Нет ответа от модели"
+    if legal_advice:
+        advice_text = legal_advice[0]['advice']
+
     message = f"""
         🆕 <b>Новый запрос в системе</b>
         ├─ Операция: {operation_log.operation_id}
         ├─ Участников: {len(operation_log.participants)}
         └─ ID: {operation_log.id}
-            """.strip()
+            
+        <b>Ответ модели:</b>
+        {advice_text}
+        """.strip()
+
     send_telegram_message(message)
 
 def notify_feedback(operation_log):
