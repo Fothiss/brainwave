@@ -1,5 +1,6 @@
 import requests
 import os
+import re
 
 
 def send_telegram_message(text):
@@ -26,6 +27,16 @@ def send_telegram_message(text):
     except Exception as e:
         print(f"Telegram error: {e}")
         return None
+    
+
+def clean_advice_text(text):
+    """Конвертирует Markdown в Telegram MarkdownV2"""
+    # Заменяем заголовки с ### на жирный текст
+    text = re.sub(r'###\s*(.+)', r'**\1**', text)  # ### Заголовок → **Заголовок**
+    text = re.sub(r'##\s*(.+)', r'**\1**', text)   # ## Заголовок → **Заголовок**
+    text = re.sub(r'#\s*(.+)', r'**\1**', text)    # # Заголовок → **Заголовок**
+    
+    return text
 
 def notify_new_operation(operation_log):
     """Отправляет уведомление о новом запросе"""
@@ -35,18 +46,18 @@ def notify_new_operation(operation_log):
     advice_text = "Нет ответа от модели"
     if legal_advice:
         advice_text = legal_advice[0]['advice']
+        advice_text = clean_advice_text(advice_text)
 
-    message = f"""
-        🆕 <b>Новый запрос в системе</b>
-        ├─ Операция: {operation_log.operation_id}
-        ├─ Участников: {len(operation_log.participants)}
-        └─ ID: {operation_log.id}
-            
-        <b>Ответ модели:</b>
-        {advice_text}
-        """.strip()
+    message = f"""🆕 **Новый запрос в системе**
+        Операция: {operation_log.operation_id}
+        Участников: {len(operation_log.participants)}
+        ID: {operation_log.id}
+
+        **Ответ модели:**
+        {advice_text}"""
 
     send_telegram_message(message)
+
 
 def notify_feedback(operation_log):
     """Отправляет уведомление об оценке"""
