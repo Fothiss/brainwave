@@ -2,7 +2,8 @@ import threading
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from operations.models import Law
+from operations.models import Law, OperationLog
+from operations.tg_notify import notify_new_operation, notify_feedback
 from utils.google_drive import download_pdf_for_folder
 from utils.pdf_to_embedding import process_document_and_get_embedding
 from utils.process import upload_to_qdrant_one_doc
@@ -27,3 +28,14 @@ def add_embedding_to_qdrant(sender, instance, created, **kwargs):
         thread = threading.Thread(target=process_law_task, args=(instance.law_id, instance.file_url))
         thread.start()
         print(f"🚀 Асинхронная обработка документа {instance.law_id} запущена")
+
+
+@receiver(post_save, sender=OperationLog)
+def handle_operation_log_save(sender, instance, created, **kwargs):
+    """Отправляет уведомления в Telegram при создании OperationLog и оценках"""
+    if created:
+        # Новый запрос от пользователя
+        notify_new_operation(instance)
+    elif instance.feedback is not None:
+        # Пользователь поставил оценку
+        notify_feedback(instance)
