@@ -1,20 +1,21 @@
 import requests
 import os
 
-token = os.getenv('TELEGRAM_BOT_TOKEN')
-chat_id = os.getenv('TELEGRAM_TEAM_CHAT_ID')
 
 def send_telegram_message(text):
     """Отправляет сообщение в Telegram"""
 
-    if not token or not chat_id:
-        print("⚠️ Telegram токен или chat_id не настроены")
+    TG_TOKEN = os.getenv("TG_TOKEN")
+    TG_CHAT_ID = os.getenv("TG_CHAT_ID")
+
+    if not TG_TOKEN or not TG_CHAT_ID:
+        print("⚠️ Telegram токен или TG_CHAT_ID не настроены")
         return None
         
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
     
     payload = {
-        'chat_id': chat_id,
+        'chat_id': TG_CHAT_ID,
         'text': text,
         'parse_mode': 'HTML'
     }
