@@ -18,7 +18,7 @@ def send_telegram_message(text):
     payload = {
         'chat_id': TG_CHAT_ID,
         'text': text,
-        'parse_mode': 'HTML'
+        'parse_mode': 'MarkdownV2'
     }
     
     try:
@@ -49,12 +49,12 @@ def notify_new_operation(operation_log):
         advice_text = clean_advice_text(advice_text)
 
     message = f"""🆕 **Новый запрос в системе**
-        Операция: {operation_log.operation_id}
-        Участников: {len(operation_log.participants)}
-        ID: {operation_log.id}
+Операция: {operation_log.operation_id}
+Участников: {len(operation_log.participants)}
+ID: {operation_log.id}
 
-        **Ответ модели:**
-        {advice_text}"""
+✅ **Ответ модели:**
+{advice_text}"""
 
     send_telegram_message(message)
 
@@ -66,9 +66,9 @@ def notify_feedback(operation_log):
     comment = operation_log.user_comment or "нет комментария"
     
     message = f"""
-        {rating} <b>Пользователь оценил ответ</b>
-        ├─ Оценка: {rating}
-        ├─ Комментарий: {comment}
-        └─ ID запроса: {operation_log.id}
-            """.strip()
+💯 **Пользователь оценил ответ**
+Оценка: {rating}
+Комментарий: {comment}
+ID запроса: {operation_log.id}
+    """.strip()
     send_telegram_message(message)
