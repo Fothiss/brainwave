@@ -18,7 +18,7 @@ def send_telegram_message(text):
     payload = {
         'chat_id': TG_CHAT_ID,
         'text': text,
-        'parse_mode': 'MarkdownV2'
+        'parse_mode': 'HTML'
     }
     
     try:
@@ -30,11 +30,14 @@ def send_telegram_message(text):
     
 
 def clean_advice_text(text):
-    """Конвертирует Markdown в Telegram MarkdownV2"""
-    # Заменяем заголовки с ### на жирный текст
-    text = re.sub(r'###\s*(.+)', r'**\1**', text)  # ### Заголовок → **Заголовок**
-    text = re.sub(r'##\s*(.+)', r'**\1**', text)   # ## Заголовок → **Заголовок**
-    text = re.sub(r'#\s*(.+)', r'**\1**', text)    # # Заголовок → **Заголовок**
+    """Конвертирует Markdown в HTML"""
+    # Заменяем заголовки с ### на HTML теги
+    text = re.sub(r'###\s*(.+)', r'<b>\1</b>', text)  # ### Заголовок → <b>Заголовок</b>
+    text = re.sub(r'##\s*(.+)', r'<b>\1</b>', text)   # ## Заголовок → <b>Заголовок</b>
+    text = re.sub(r'#\s*(.+)', r'<b>\1</b>', text)    # # Заголовок → <b>Заголовок</b>
+    
+    # Заменяем ** на <b> для жирного текста
+    text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)  # **текст** → <b>текст</b>
     
     return text
 
@@ -48,12 +51,12 @@ def notify_new_operation(operation_log):
         advice_text = legal_advice[0]['advice']
         advice_text = clean_advice_text(advice_text)
 
-    message = f"""🆕 **Новый запрос в системе**
+    message = f"""🆕 <b>Новый запрос в системе</b>
 Операция: {operation_log.operation_id}
 Участников: {len(operation_log.participants)}
 ID: {operation_log.id}
 
-✅ **Ответ модели:**
+✅ <b>Ответ модели:</b>
 {advice_text}"""
 
     send_telegram_message(message)
@@ -65,10 +68,9 @@ def notify_feedback(operation_log):
     
     comment = operation_log.user_comment or "нет комментария"
     
-    message = f"""
-💯 **Пользователь оценил ответ**
+    message = f"""💯 <b>Пользователь оценил ответ</b>
 Оценка: {rating}
 Комментарий: {comment}
-ID запроса: {operation_log.id}
-    """.strip()
+ID запроса: {operation_log.id}"""
+    
     send_telegram_message(message)
