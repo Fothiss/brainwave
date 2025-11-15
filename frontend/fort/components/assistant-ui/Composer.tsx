@@ -118,32 +118,36 @@ export default function Composer() {
                     participants.map((p, idx) => (
                         <div key={idx} style={{display: "flex", gap: "10px", width: "100%", alignItems: "center"}}>
 
-                            <p style={{width: "150px"}}>Участник {idx + 1}</p>
+                            <p style={{width: "90px"}}>Участник {idx + 1}</p>
 
                             <Autocomplete
-                                options={["Физическое лицо", "Юридическое лицо"]}
+                                options={["Физическое лицо", "Юридическое лицо", "ОДС (счет общей долевой собственности)", "Госорганы", "РФ"]}
                                 value={p.type}
                                 onChange={(_, value) => updateParticipant(idx, "type", value || "Физическое лицо")}
-                                sx={{width: "100%"}}
+                                sx={{flex: 2}}
                                 renderInput={(params) => (
                                     <TextField {...params} label="Тип лица" variant="outlined" size="small"/>
                                 )}
                             />
 
-                            <Autocomplete
-                                options={["Да", "Нет"]}
-                                value={p.isResident}
-                                onChange={(_, value) => updateParticipant(idx, "isResident", value || "Да")}
-                                sx={{width: "290px"}}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Налоговый резидент РФ"
-                                        variant="outlined"
-                                        size="small"
+                            {
+                                ["Физическое лицо", "Юридическое лицо"].includes(p.type) && (
+                                    <Autocomplete
+                                        options={["Да", "Нет"]}
+                                        value={p.isResident}
+                                        onChange={(_, value) => updateParticipant(idx, "isResident", value || "Да")}
+                                        sx={{flex: 1}}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Налоговый резидент РФ"
+                                                variant="outlined"
+                                                size="small"
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
+                                )
+                            }
                         </div>
                     ))
                 }
