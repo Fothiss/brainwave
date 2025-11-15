@@ -12,7 +12,11 @@ export default function Thread() {
             className="bg-background box-border h-full flex flex-col overflow-hidden"
             style={{["--thread-max-width" as string]: "42rem"}}
         >
-            <ThreadPrimitive.Viewport className="flex h-full flex-col items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-8">
+            <ThreadPrimitive.Viewport className="flex h-full flex-col items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-0">
+                <div className="sticky top-0 mt-0 flex w-full max-w-[var(--thread-max-width)] flex-col items-center justify-start rounded-b-lg bg-background pt-1 pb-1 z-20">
+                    <Composer/>
+                </div>
+
                 <ThreadWelcome/>
 
                 <ThreadPrimitive.Messages
@@ -26,10 +30,7 @@ export default function Thread() {
                     <div className="min-h-8 flex-grow"/>
                 </ThreadPrimitive.If>
 
-                <div className="sticky bottom-0 mt-3 flex w-full max-w-[var(--thread-max-width)] flex-col items-center justify-end rounded-t-lg bg-inherit pb-4">
-                    <ThreadScrollToBottom/>
-                    <Composer/>
-                </div>
+                <ThreadScrollToBottom/>
             </ThreadPrimitive.Viewport>
         </ThreadPrimitive.Root>
     );

@@ -9,7 +9,7 @@ export default function ThreadScrollToBottom() {
             <TooltipIconButton
                 tooltip="Scroll to bottom"
                 variant="outline"
-                className="absolute -top-8 rounded-full disabled:invisible"
+                className="absolute -bottom-0 mb-3 rounded-full disabled:invisible"
             >
                 <ArrowDownIcon/>
             </TooltipIconButton>

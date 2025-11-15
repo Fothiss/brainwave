@@ -90,7 +90,7 @@ export default function Composer() {
                             {...params}
                             placeholder="Выберите операцию"
                             variant="outlined"
-                            size="medium"
+                            size="small"
                             slotProps={{
                                 input: {
                                     ...params.InputProps,
@@ -105,7 +105,7 @@ export default function Composer() {
                         />
                     )}
                 />
-                <IconButton aria-label="sent" onClick={sendMessage} style={{width: "56px"}}>
+                <IconButton aria-label="sent" onClick={sendMessage}>
                     {
                         isLoading
                             ? <CircularProgress color="inherit" size={20}/>
@@ -126,7 +126,7 @@ export default function Composer() {
                                 onChange={(_, value) => updateParticipant(idx, "type", value || "Физическое лицо")}
                                 sx={{width: "100%"}}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Тип лица" variant="outlined"/>
+                                    <TextField {...params} label="Тип лица" variant="outlined" size="small"/>
                                 )}
                             />
 
@@ -136,7 +136,12 @@ export default function Composer() {
                                 onChange={(_, value) => updateParticipant(idx, "isResident", value || "Да")}
                                 sx={{width: "290px"}}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Налоговый резидент РФ" variant="outlined"/>
+                                    <TextField
+                                        {...params}
+                                        label="Налоговый резидент РФ"
+                                        variant="outlined"
+                                        size="small"
+                                    />
                                 )}
                             />
                         </div>
