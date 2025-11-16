@@ -85,7 +85,7 @@ const MyModelAdapter: ChatModelAdapter = {
             content: [
                 {
                     type: "text",
-                    text: `${content}\n\n### 📂 Документы\\n${formattedDocs}\n\n### 📘 Руководство пользователя\n${formattedGuide}`
+                    text: `${content}\n\n### 📂 Документы\n\n${formattedDocs}\n\n### 📘 Руководство пользователя\n${formattedGuide}`
                 }
             ],
             metadata: {

@@ -81,7 +81,7 @@ class OperationDetailsView(APIView):
         # doc_id передан → выполняем ПОЛНУЮ логику
         # ============================
 
-        doc_item = next((item for item in docs_arr if item[1] == doc_id), None)
+        doc_item = next((item for item in docs_arr if item[1] == doc_id), None) if doc_id is not None else docs_arr
 
         if not doc_item:
             return Response({"error": "Invalid doc_id"}, status=status.HTTP_400_BAD_REQUEST)
