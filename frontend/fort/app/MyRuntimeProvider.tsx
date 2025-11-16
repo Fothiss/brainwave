@@ -3,18 +3,16 @@
 import type {ReactNode} from "react";
 import {AssistantRuntimeProvider, useLocalRuntime, type ChatModelAdapter,} from "@assistant-ui/react";
 
-import {OperationRef} from "@/app/models/operationRef";
-import {Participants} from "@/app/models/participants";
 import {OperationDetails} from "@/app/models/operationDetails";
 import {BACKEND_URL} from "@/app/api";
+import {CustomAppendMessageType} from "@/app/models/customAppendMessage";
 
 const MyModelAdapter: ChatModelAdapter = {
     async run({messages, abortSignal}) {
 
-        const operation = messages.at(-1)?.metadata.custom.operation as OperationRef | null;
-        const participants = messages.at(-1)?.metadata.custom.participants as Participants[];
+        const custom = (messages.at(-1) as CustomAppendMessageType | undefined)?.metadata?.custom
 
-        if (!operation)
+        if (!custom?.operation)
             return {content: [{type: "text", text: `❌ Операция не выбрана`}]};
 
         let res;
@@ -24,7 +22,14 @@ const MyModelAdapter: ChatModelAdapter = {
                 {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({operation_id: operation.operation_id, participants}),
+                    body: JSON.stringify(
+                        {
+                            operation_id: custom.operation.operation_id,
+                            participants: custom.participants,
+                            log_id: custom.log_id,
+                            doc_id: custom.doc_id
+                        }
+                    ),
                     signal: abortSignal
                 }
             );
@@ -50,6 +55,15 @@ const MyModelAdapter: ChatModelAdapter = {
 
         const {log_id, guide_data, docs_data, legal_advice} = data;
 
+        if (docs_data.length > 1) {
+            return {
+                content: [],
+                metadata: {
+                    custom: {log_id, operation: custom.operation, participants: custom.participants, docs_data}
+                }
+            };
+        }
+
         const formattedGuide = guide_data
             .map(([name, section]) => `- **${name}** — раздел ${section}`)
             .join("\n");
@@ -71,7 +85,7 @@ const MyModelAdapter: ChatModelAdapter = {
             content: [
                 {
                     type: "text",
-                    text: `### 📂 Документы\n${formattedDocs}${content}\n\n### 📘 Руководство пользователя\n${formattedGuide}`
+                    text: `${content}\n\n### 📂 Документы\\n${formattedDocs}\n\n### 📘 Руководство пользователя\n${formattedGuide}`
                 }
             ],
             metadata: {

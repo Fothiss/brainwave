@@ -1,28 +1,18 @@
 import {SyntheticEvent, useEffect, useState} from "react";
-import {CreateAppendMessage, useThreadRuntime} from "@assistant-ui/react";
+import {useThreadRuntime} from "@assistant-ui/react";
 import {Autocomplete, CircularProgress, IconButton, TextField} from "@mui/material";
 import {Send} from "@mui/icons-material";
 
 import {OperationRef} from "@/app/models/operationRef";
 import {Participants} from "@/app/models/participants";
 import {useOperationRefs} from "@/app/hooks/useOperationRefs";
-
-type CustomMetadataType = {
-    custom: {
-        operation: OperationRef | null;
-        participants: Participants[];
-    };
-};
-
-type CustomAppendMessageType = CreateAppendMessage & {
-    metadata?: CustomMetadataType;
-};
+import {CustomAppendMessageType} from "@/app/models/customAppendMessage";
 
 export default function Composer() {
     const {operations, loading} = useOperationRefs();
     const runtime = useThreadRuntime();
 
-    const [selected, setSelected] = useState<OperationRef | null>(null);
+    const [selected, setSelected] = useState<OperationRef | undefined>(undefined);
     const [participants, setParticipants] = useState<Participants[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -49,7 +39,9 @@ export default function Composer() {
             metadata: {
                 custom: {
                     operation: selected,
-                    participants
+                    participants,
+                    doc_id: undefined,
+                    log_id: undefined
                 }
             }
         };
@@ -58,7 +50,7 @@ export default function Composer() {
     }
 
     const handleSelectChange = (_: SyntheticEvent, value: OperationRef | null) => {
-        setSelected(value);
+        setSelected(value ?? undefined);
         setParticipants(Array.from({length: value?.participants ?? 0}, () => ({
             name: "",
             type: "Физическое лицо",
