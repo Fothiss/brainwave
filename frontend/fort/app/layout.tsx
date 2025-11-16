@@ -1,16 +1,22 @@
-import "./globals.css";
-import {MyRuntimeProvider} from "@/app/MyRuntimeProvider";
+import {AppRouterCacheProvider} from '@mui/material-nextjs/v15-appRouter';
 import {Toaster} from "sonner";
 import {ReactNode} from "react";
-import {AppRouterCacheProvider} from '@mui/material-nextjs/v15-appRouter';
 
-export default function RootLayout({children}: Readonly<{ children: ReactNode; }>) {
+import {MyRuntimeProvider} from "@/app/MyRuntimeProvider";
+
+import "./globals.css";
+
+type PropsType = {
+    children: ReactNode
+}
+
+export default function RootLayout(props: PropsType) {
     return (
         <MyRuntimeProvider>
-            <html lang="en">
+            <html lang="ru">
             <body>
             <AppRouterCacheProvider>
-                {children}
+                {props.children}
                 <Toaster position="top-right" richColors/>
             </AppRouterCacheProvider>
             </body>
