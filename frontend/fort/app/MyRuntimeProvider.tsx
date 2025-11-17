@@ -54,12 +54,18 @@ const MyModelAdapter: ChatModelAdapter = {
         const data: OperationDetails = await res.json();
 
         const {log_id, guide_data, docs_data, legal_advice} = data;
+        const cleanedDocs = docs_data.filter(([text]) => text !== "0");
 
         if (docs_data.length > 1) {
             return {
                 content: [],
                 metadata: {
-                    custom: {log_id, operation: custom.operation, participants: custom.participants, docs_data}
+                    custom: {
+                        log_id,
+                        operation: custom.operation,
+                        participants: custom.participants,
+                        docs_data: cleanedDocs
+                    }
                 }
             };
         }
@@ -68,7 +74,7 @@ const MyModelAdapter: ChatModelAdapter = {
             .map(([name, section]) => `- **${name}** — раздел ${section}`)
             .join("\n");
 
-        const formattedDocs = docs_data
+        const formattedDocs = cleanedDocs
             .map(([name]) => `- ${name}`)
             .join("\n");
 
