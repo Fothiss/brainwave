@@ -14,6 +14,9 @@ export default function RootLayout(props: PropsType) {
     return (
         <MyRuntimeProvider>
             <html lang="ru">
+            <head>
+                <title>Brainwave</title>
+            </head>
             <body>
             <AppRouterCacheProvider>
                 {props.children}
