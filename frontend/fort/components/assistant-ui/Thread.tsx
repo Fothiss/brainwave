@@ -12,7 +12,10 @@ export default function Thread() {
             className="bg-background box-border h-full flex flex-col overflow-hidden"
             style={{["--thread-max-width" as string]: "42rem"}}
         >
-            <ThreadPrimitive.Viewport className="flex h-full flex-col items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-0">
+            <ThreadPrimitive.Viewport
+                className="flex h-full flex-col items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-0"
+                autoScroll={false}
+            >
                 <div className="sticky top-0 mt-0 flex w-full max-w-[var(--thread-max-width)] flex-col items-center justify-start rounded-b-lg bg-background pt-1 pb-1 z-20">
                     <Composer/>
                 </div>
