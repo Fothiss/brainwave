@@ -23,17 +23,35 @@ DB_PORT=5432
 DB_NAME=name
 DB_USER=user
 DB_PASSWORD=password
+DB_HOST=postgres (название из docker-compose.yml)
 
 # Qdrant
 QDRANT_HTTP_PORT=6333
 QDRANT_GRPC_PORT=6334
+QDRANT_HOST=qdrant (название из docker-compose.yml)
 
 # Backend
 BACKEND_PORT=8000
 
+#GigaChat
+CLIENT_ID=xxx
+CLIENT_SECRET=xxx
+AUTH_KEY=xxx
+
 #Frontend
 FRONTEND_PORT=3000
 ```
+
+<h2>🔑 Google Drive Service Account</h2>
+<p>
+    В директории <code>backend/utils</code> необходимо разместить файл 
+    <code>service_account.json</code>, полученный в 
+    <strong>Google Cloud Console</strong> 
+    (раздел <em>Service Accounts → Keys</em>).
+</p>
+<p>
+    Этот файл необходим для корректной работы с <strong>Google Drive API</strong>.
+</p>
 
 <h2>▶️ Запуск проекта</h2>
 <p>Проект запускается с помощью <code>docker compose</code> и включает 4 сервиса:</p> 

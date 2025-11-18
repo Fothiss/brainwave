@@ -9,7 +9,7 @@ COPY ./backend/requirements.txt /app/
 RUN pip install -r requirements.txt
 
 COPY ./backend/ /app/
-COPY .env /app/
+COPY ../.env /app/
 
 COPY ./backend/entrypoint.sh /app/
 RUN chmod +x /app/entrypoint.sh

@@ -25,7 +25,7 @@ services:
         depends_on:
             - postgres
         env_file:
-            - ./backend/.env
+            - .env
         networks:
             - app_network
 

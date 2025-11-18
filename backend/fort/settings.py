@@ -17,9 +17,10 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_PATH = BASE_DIR.parent / ".env"
 
 env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(str(ENV_PATH))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -33,12 +34,12 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_METHODS = [
-    # 'DELETE',
+    'DELETE',
     'GET',
-    # 'OPTIONS',
-    # 'PATCH',
+    'OPTIONS',
+    'PATCH',
     'POST',
-    # 'PUT',
+    'PUT',
 ]
 CORS_ALLOW_HEADERS = [
     'accept',
@@ -123,12 +124,6 @@ DATABASES = {
         'PORT': env('DB_PORT'),
     }
 }
-# CONFLUENCE
-
-CONFLUENCE_URL = env('CONFLUENCE_URL')
-CONFLUENCE_USERNAME = env('CONFLUENCE_USERNAME')
-CONFLUENCE_API_TOKEN = env('CONFLUENCE_API_TOKEN')
-CONFLUENCE_SPACE_KEY = env('CONFLUENCE_SPACE_KEY')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
