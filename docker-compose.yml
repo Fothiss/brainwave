@@ -1,64 +1,64 @@
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    image: frontend
-    container_name: frontend
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./frontend/.env
-    depends_on:
-      - backend
-    networks:
-      - app-network
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        image: frontend
+        container_name: frontend
+        ports:
+            - "${FRONTEND_PORT}:3000"
+        env_file:
+            - ./frontend/.env
+        depends_on:
+            - backend
+        networks:
+            - app_network
 
-  backend:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile
-    image: backend
-    container_name: backend
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    env_file:
-      - ./backend/.env
-    networks:
-      - app-network
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        image: backend
+        container_name: backend
+        ports:
+            - "${BACKEND_PORT}:8000"
+        depends_on:
+            - postgres
+        env_file:
+            - ./backend/.env
+        networks:
+            - app_network
 
-  db:
-    image: postgres:17
-    container_name: postgres_db
-    ports:
-      - "5433:5433"
-    environment:
-      - PGPORT=${DB_PORT}
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - app-network
+    postgres:
+        image: postgres:17
+        container_name: postgres
+        ports:
+            - "${DB_PORT}:5432"
+        environment:
+            - PGPORT=5432
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - app_network
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: qdrant
-    ports:
-      - ${QDRANT_HTTP_PORT}
-      - ${QDRANT_GRPC_PORT}
-    volumes:
-      - qdrant_data:/qdrant/storage
-    networks:
-      - app-network
+    qdrant:
+        image: qdrant/qdrant:latest
+        container_name: qdrant
+        ports:
+            - "${QDRANT_HTTP_PORT}:6333"
+            - "${QDRANT_GRPC_PORT}:6334"
+        volumes:
+            - qdrant_data:/qdrant/storage
+        networks:
+            - app_network
 
 networks:
-  app-network:
-    driver: bridge
+    app_network:
+        driver: bridge
 
 volumes:
-  db_data:
-  qdrant_data:
+    postgres_data:
+    qdrant_data:
