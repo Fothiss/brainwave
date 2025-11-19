@@ -33,12 +33,12 @@ QDRANT_HOST=qdrant (название из docker-compose.yml)
 # Backend
 BACKEND_PORT=8000
 
-#GigaChat
+# GigaChat
 CLIENT_ID=xxx
 CLIENT_SECRET=xxx
 AUTH_KEY=xxx
 
-#Frontend
+# Frontend
 FRONTEND_PORT=3000
 ```
 
