@@ -3,12 +3,14 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile
+            args:
+                NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
         image: frontend
         container_name: frontend
         ports:
             - "${FRONTEND_PORT}:3000"
         env_file:
-            - ./frontend/.env
+            - .env
         depends_on:
             - backend
         networks:
