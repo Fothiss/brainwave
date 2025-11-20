@@ -33,13 +33,18 @@ QDRANT_HOST=qdrant (название из docker-compose.yml)
 # Backend
 BACKEND_PORT=8000
 
+# Frontend
+FRONTEND_PORT=3000
+NEXT_PUBLIC_BACKEND_URL=http://brainwave_backend.com
+
 # GigaChat
 CLIENT_ID=xxx
 CLIENT_SECRET=xxx
 AUTH_KEY=xxx
 
-# Frontend
-FRONTEND_PORT=3000
+# Telegram
+TG_TOKEN=xxx
+TG_CHAT_ID=xxx
 ```
 
 <h2>🔑 Google Drive Service Account</h2>
