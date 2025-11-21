@@ -1,7 +1,7 @@
 import {ThreadPrimitive} from "@assistant-ui/react";
 import {ArrowDownIcon} from "lucide-react";
 
-import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
+import {TooltipIconButton} from "@/components/assistant-ui/TooltipIconButton";
 
 export default function ThreadScrollToBottom() {
     return (
