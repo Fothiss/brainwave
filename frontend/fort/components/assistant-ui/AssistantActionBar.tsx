@@ -1,7 +1,7 @@
 import {ActionBarPrimitive} from "@assistant-ui/react";
 import {SaveIcon} from "lucide-react";
 
-import {TooltipIconButton} from "@/components/assistant-ui/TooltipIconButton";
+import {TooltipIconButton} from "@/components/ui/TooltipIconButton";
 
 type Props = {
     onSave: () => void

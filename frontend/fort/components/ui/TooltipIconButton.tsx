@@ -3,7 +3,7 @@
 import {ComponentPropsWithoutRef, forwardRef} from "react";
 
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
-import {Button} from "@/components/ui/button";
+import {Button} from "@/components/ui/Button";
 import {cn} from "@/lib/utils";
 
 type TooltipIconButtonProps = ComponentPropsWithoutRef<typeof Button> & {

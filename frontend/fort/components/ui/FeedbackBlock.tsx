@@ -1,7 +1,7 @@
 import {FC, useState} from "react";
 import {toast} from "sonner";
 import {TextField} from "@mui/material";
-import {Button} from "@/components/ui/button";
+import {Button} from "@/components/ui/Button";
 
 import {Property} from "csstype";
 

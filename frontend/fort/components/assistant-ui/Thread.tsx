@@ -3,7 +3,7 @@ import {ThreadPrimitive} from "@assistant-ui/react";
 import AssistantMessage from "@/components/assistant-ui/AssistantMessage";
 import ThreadWelcome from "@/components/assistant-ui/ThreadWelcome";
 import UserMessage from "@/components/assistant-ui/UserMessage";
-import Composer from "@/components/assistant-ui/Composer";
+import Composer from "@/components/ui/Composer";
 import ThreadScrollToBottom from "@/components/assistant-ui/ThreadScrollToBottom";
 
 export default function Thread() {
