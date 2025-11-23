@@ -3,7 +3,7 @@ import {MessagePrimitive, useMessage, useThreadRuntime} from "@assistant-ui/reac
 import {Autocomplete, CircularProgress, IconButton, TextField} from "@mui/material";
 import {Send} from "@mui/icons-material";
 
-import {MarkdownText} from "@/components/assistant-ui/markdown-text";
+import {MarkdownText} from "@/components/assistant-ui/MarkdownText";
 import {FeedbackBlock} from "@/components/ui/FeedbackBlock";
 import AssistantActionBar from "@/components/assistant-ui/AssistantActionBar";
 import {downloadPdf} from "@/app/utils/downloadPdf";
