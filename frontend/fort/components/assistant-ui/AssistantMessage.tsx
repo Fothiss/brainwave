@@ -10,6 +10,7 @@ import {downloadPdf} from "@/app/utils/downloadPdf";
 import {Participants} from "@/app/models/participants";
 import {CustomAppendMessageType} from "@/app/models/customAppendMessage";
 import {OperationRef} from "@/app/models/operationRef";
+import MessagePrimitivePartsGrouped from "@/components/assistant-ui/MessagePrimitivePartsGrouped";
 
 type CustomType = {
     log_id: number;
@@ -101,10 +102,14 @@ export default function AssistantMessage() {
     }
 
     return (
-        <MessagePrimitive.Root className="grid grid-cols-[auto_auto_1fr] grid-rows-[auto_1fr] relative w-full max-w-[var(--thread-max-width)] py-4">
-            <div className="text-foreground max-w-[calc(var(--thread-max-width)*0.8)] break-words leading-7 col-span-2 col-start-2 row-start-1 my-1.5 flex-wrap">
-                <div id={message.id}>
-                    <MessagePrimitive.Content components={{Text: MarkdownText}}/>
+        <MessagePrimitive.Root className={`grid grid-cols-[auto_auto_1fr] grid-rows-[auto_1fr] relative w-full max-w-[calc(var(--thread-max-width)${message.content.length > 1 ? "*1.5" : ""})] py-4`}>
+            <div className={`text-foreground ${message.content.length <= 1 && "max-w-[calc(var(--thread-max-width)*0.8)]"} break-words leading-7 col-span-2 col-start-2 row-start-1 my-1.5 flex-wrap`}>
+                <div id={message.id} style={{display: "flex", gap: 10}}>
+                    {
+                        message.content.length > 1
+                            ? <MessagePrimitivePartsGrouped/>
+                            : <MessagePrimitive.Content components={{Text: MarkdownText}}/>
+                    }
                 </div>
 
                 {
