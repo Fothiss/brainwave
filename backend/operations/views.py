@@ -3,11 +3,12 @@ from rest_framework import generics, filters, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from dataclasses import dataclass
 
 from utils.get_guide_and_docs_by_operation import get_guide_and_docs_by_operation
 from utils.get_advice import get_legal_advice
 from operations.models import OperationRef, OperationLog
-from operations.serializers import OperationRefSerializer
+from operations.serializers import OperationRefSerializer, OperationFeedbackSerializer
 
 
 class OperationRefPagination(PageNumberPagination):
@@ -134,22 +135,28 @@ class OperationDetailsView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+@dataclass
+class OperationFeedbackData:
+    log_id: int
+    feedback: int
+    user_comment: str = ""
+
+
 class OperationFeedbackView(APIView):
-    def post(self, request, *args, **kwargs):
-        log_id = request.data.get("log_id")
-        feedback: int = request.data.get("feedback")
-        user_comment: str = request.data.get("user_comment", "")
+    def post(self, request, *args, **kwargs) -> Response:
+        serializer = OperationFeedbackSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if log_id is None or feedback is None:
-            return Response({"error": "log_id and feedback are required"}, status=400)
+        data = OperationFeedbackData(
+            log_id=serializer.validated_data["log_id"],
+            feedback=serializer.validated_data["feedback"],
+            user_comment=serializer.validated_data.get("user_comment", "")
+        )
 
-        try:
-            log = OperationLog.objects.get(id=log_id)
-        except OperationLog.DoesNotExist:
-            return Response({"error": "log not found"}, status=404)
+        log = get_object_or_404(OperationLog, id=data.log_id)
 
-        log.feedback = feedback
-        log.user_comment = user_comment
-        log.save()
+        log.feedback = data.feedback
+        log.user_comment = data.user_comment
+        log.save(update_fields=["feedback", "user_comment"])
 
         return Response({"status": "feedback saved"}, status=200)
