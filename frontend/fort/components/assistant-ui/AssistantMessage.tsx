@@ -102,7 +102,11 @@ export default function AssistantMessage() {
     }
 
     return (
-        <MessagePrimitive.Root className={`grid grid-cols-[auto_auto_1fr] grid-rows-[auto_1fr] relative w-full max-w-[calc(var(--thread-max-width)${message.content?.length > 1 ? "*1.5" : ""})] py-4`}>
+        <MessagePrimitive.Root className="grid grid-cols-[auto_auto_1fr] grid-rows-[auto_1fr] relative w-full py-4"
+                               style={{
+                                   maxWidth: `calc(var(--thread-max-width) * ${message.content?.length > 1 ? 1.5 : 1})`
+                               }}
+        >
             <div className={`text-foreground ${message.content.length <= 1 ? "max-w-[calc(var(--thread-max-width)*0.8)]" : "max-w-[calc(var(--thread-max-width)*10)]"} break-words leading-7 col-span-2 col-start-2 row-start-1 my-1.5 flex-wrap`}>
                 <div id={message.id} style={{display: "flex", gap: 10}}>
                     {
