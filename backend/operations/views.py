@@ -89,31 +89,40 @@ class OperationDetailsView(APIView):
 
         filtered_docs_arr = [doc_item]
 
-        legal_advice_results = []
+        legal_advice_results_main = []
+        # legal_advice_results_stub = []
 
         for p in participants:
             participant_type = p.get("type")
             is_resident = p.get("isResident")
-
             if not participant_type or not is_resident:
                 continue
 
-            legal_text = get_legal_advice(
+            legal_text_main = get_legal_advice(
                 operation=operation_obj.name,
                 participant_type=participant_type,
                 section_number=section_number
             )
 
-            legal_advice_results.append({
+            # legal_text_stub = f"⚠️ Заглушка для {p.get('name')} ({participant_type})"
+
+            legal_advice_results_main.append({
                 "participant": p,
-                "advice": legal_text
+                "advice": legal_text_main
             })
+            # legal_advice_results_stub.append({
+            #     "participant": p,
+            #     "advice": legal_text_stub
+            # })
 
         response_data = {
             "operation": OperationRefSerializer(operation_obj).data,
             "guide_data": guide_arr,
             "docs_data": filtered_docs_arr,
-            "legal_advice": legal_advice_results
+            "legal_advice": [
+                legal_advice_results_main,
+                # legal_advice_results_stub
+            ]
         }
 
         if log_id:

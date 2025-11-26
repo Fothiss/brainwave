@@ -78,22 +78,19 @@ const MyModelAdapter: ChatModelAdapter = {
             .map(([name]) => `- ${name}`)
             .join("\n");
 
-        const content = legal_advice
-            .map(item => {
+        const content = legal_advice.map((variant) => {
+            return variant.map(item => {
                 const {participant, advice} = item;
-
                 const title = `👤 ${participant.name} (${participant.type}, Резидент: ${participant.isResident})`;
-
-                return `\n\n### ${title}\n${advice}`
-            });
+                return `\n\n### ${title}\n${advice}`;
+            }).join("\n");
+        });
 
         return {
-            content: [
-                {
-                    type: "text",
-                    text: `${content}\n\n### 📂 Документы\n\n${formattedDocs}\n\n### 📘 Руководство пользователя\n${formattedGuide}`
-                }
-            ],
+            content: content.map(text => ({
+                type: "text",
+                text: `${text}\n\n### 📂 Документы\n\n${formattedDocs}\n\n### 📘 Руководство пользователя\n${formattedGuide}`
+            })),
             metadata: {
                 custom: {log_id}
             }
