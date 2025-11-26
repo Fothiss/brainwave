@@ -5,13 +5,13 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY ./backend/requirements.txt /app/
+COPY ./requirements.txt /app/
 RUN pip install -r requirements.txt
 
-COPY ./backend/ /app/
+COPY ./ /app/
 COPY ../.env /app/
 
-COPY ./backend/entrypoint.sh /app/
+COPY ./entrypoint.sh /app/
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
