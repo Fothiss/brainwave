@@ -39,13 +39,12 @@ export default function Composer() {
             metadata: {
                 custom: {
                     operation: selected,
-                    participants,
-                    doc_id: undefined,
-                    log_id: undefined
+                    participants
                 }
             }
         };
 
+        runtime.reset([])
         runtime.append(message);
     }
 

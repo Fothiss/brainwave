@@ -5,10 +5,10 @@ import {Participants} from "@/app/models/participants";
 
 type CustomMetadataType = {
     custom: {
-        log_id: number | undefined;
-        operation: OperationRef | undefined;
-        participants: Participants[] | undefined;
-        doc_id: number | undefined;
+        log_id?: number;
+        operation?: OperationRef;
+        participants?: Participants[];
+        doc_id?: number;
     };
 };
 
