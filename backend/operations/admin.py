@@ -1,37 +1,49 @@
+from typing import List
 from django.contrib import admin
+from django.db.models import Model
 
 from operations.models import OperationRef, Law, UserGuide, OrderHdr, BasisDoc, OperationOrderBasis
 
 
-def get_all_model_fields(model):
-    return [field.name for field in model._meta.fields]
+class BaseAutoAdmin(admin.ModelAdmin):
+
+    @staticmethod
+    def get_model_field_names(model: Model) -> List[str]:
+        return [field.name for field in model._meta.get_fields()
+                if not (field.many_to_many or field.one_to_many)]
+
+    def __init__(self, model, admin_site):
+        if not hasattr(self, "list_display") or not self.list_display:
+            self.list_display = self.get_model_field_names(model)
+
+        super().__init__(model, admin_site)
 
 
 @admin.register(OperationRef)
-class OperationRefAdmin(admin.ModelAdmin):
-    list_display = get_all_model_fields(OperationRef)
+class OperationRefAdmin(BaseAutoAdmin):
+    pass
 
 
 @admin.register(Law)
-class LawAdmin(admin.ModelAdmin):
-    list_display = get_all_model_fields(Law)
+class LawAdmin(BaseAutoAdmin):
+    pass
 
 
 @admin.register(UserGuide)
-class UserGuideAdmin(admin.ModelAdmin):
-    list_display = get_all_model_fields(UserGuide)
+class UserGuideAdmin(BaseAutoAdmin):
+    pass
 
 
 @admin.register(OrderHdr)
-class OrderHdrAdmin(admin.ModelAdmin):
-    list_display = get_all_model_fields(OrderHdr)
+class OrderHdrAdmin(BaseAutoAdmin):
+    pass
 
 
 @admin.register(BasisDoc)
-class BasisDocAdmin(admin.ModelAdmin):
-    list_display = get_all_model_fields(BasisDoc)
+class BasisDocAdmin(BaseAutoAdmin):
+    pass
 
 
 @admin.register(OperationOrderBasis)
-class OperationOrderBasisAdmin(admin.ModelAdmin):
-    list_display = get_all_model_fields(OperationOrderBasis)
+class OperationOrderBasisAdmin(BaseAutoAdmin):
+    pass
