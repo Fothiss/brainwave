@@ -1,8 +1,8 @@
 import re
-import requests
-from typing import List
 from pathlib import Path
+from typing import List
 
+import requests
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
@@ -17,34 +17,27 @@ credentials = service_account.Credentials.from_service_account_file(
 
 
 def extract_folder_id(folder_url: str) -> str | None:
-    """
-    Извлекает ID папки Google Drive из URL.
-    """
+    """Возвращает ID папки Google Drive, если найден."""
     match = re.search(r"/folders/([a-zA-Z0-9_-]+)", folder_url)
     return match.group(1) if match else None
 
 
 def download_pdf_for_folder(folder_url: str) -> List[str]:
     """
-    Скачивает все PDF-файлы из публичной папки Google Drive.
+    Скачивает все PDF-файлы из указанной публичной папки Google Drive.
     Возвращает список абсолютных путей к сохранённым файлам.
     """
-
     folder_id = extract_folder_id(folder_url)
     if not folder_id:
         print(f"❌ Невозможно извлечь ID папки из URL: {folder_url}")
         return []
 
-    # Google Drive API service
     service = build("drive", "v3", credentials=credentials)
 
     query = f"'{folder_id}' in parents and mimeType='application/pdf'"
-    results = service.files().list(
-        q=query,
-        fields="files(id, name)"
-    ).execute()
+    response = service.files().list(q=query, fields="files(id, name)").execute()
+    files = response.get("files", [])
 
-    files = results.get("files", [])
     if not files:
         print(f"⚠️ Нет PDF-файлов в папке: {folder_url}")
         return []
@@ -56,22 +49,21 @@ def download_pdf_for_folder(folder_url: str) -> List[str]:
 
     for file_meta in files:
         file_id = file_meta["id"]
-        name = file_meta["name"]
+        file_name = file_meta["name"]
 
-        print(f"⬇️ Скачиваю: {name}")
+        print(f"⬇️ Скачиваю: {file_name}")
 
-        response = requests.get(
-            f"https://drive.google.com/uc?export=download&id={file_id}"
-        )
+        download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+        response = requests.get(download_url)
 
         if response.status_code == 200:
-            save_path = downloads_dir / name
+            save_path = downloads_dir / file_name
             save_path.write_bytes(response.content)
-
             saved_paths.append(str(save_path))
+
             print(f"✅ Скачан: {save_path}")
         else:
-            print(f"❌ Ошибка загрузки {name}: {response.status_code}")
+            print(f"❌ Ошибка загрузки {file_name}: {response.status_code}")
 
     print(f"🎉 Все PDF из папки {folder_id} загружены.")
     return saved_paths
