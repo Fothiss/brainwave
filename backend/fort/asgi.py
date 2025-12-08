@@ -1,16 +1,27 @@
 """
 ASGI config for fort project.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+Exposes the ASGI application callable as a module-level variable named ``application``.
 
-For more information on this file, see
+See:
 https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 """
 
 import os
-
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fort.settings')
+# Set default settings module only if not already defined
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fort.settings")
 
-application = get_asgi_application()
+
+def create_asgi_application():
+    """
+    Создаёт и возвращает ASGI-приложение.
+    Вынесено в функцию, чтобы облегчить расширение в будущем
+    (например, подключить WebSocket-роутинг).
+    """
+    return get_asgi_application()
+
+
+# ASGI entrypoint
+application = create_asgi_application()
