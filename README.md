@@ -32,6 +32,9 @@ QDRANT_HOST=qdrant (название из docker-compose.yml)
 
 # Backend
 BACKEND_PORT=8000
+SECRET_KEY=*********
+DEBUG=True
+ALLOWED_HOSTS=*
 
 # Frontend
 FRONTEND_PORT=3000
